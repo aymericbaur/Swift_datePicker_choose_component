@@ -35,20 +35,15 @@ import UIKit
 ||
 || ########### ########### ########### ############ ############ */
 
-enum DateFormat:Int {
-    case fullDate = 0
-    case mediumDate
-    case yearDate;
-    
-    var description : String {
-        switch self {
-        case .fullDate: return "yyyyMMdd";
-        case .mediumDate: return "yyyyMM";
-        case .yearDate: return "yyyy"; } }
+protocol DateFormat
+{
+    var description : String {get}
+    var numberOfComponents : Int {get}
+    init();
 }
 
 enum RegionFormat:Int{
-    case en_US = 0, he ,ja_JP,de_DE, /*yourCaseHere, andHere,...,*/ local // Feel free to add your own RegionFormat by adding a case, but please keep ALWAYS local at the last position => the segmenteControl will auto-update according to local.rawValue
+    case en_US = 0, he ,ja_JP,de_DE, /*yourCaseHere, andHere,...,*/ local // Feel free to add your own RegionFormat by adding a case, but please keep ALWAYS .local at the last position => the segmenteControl will auto-update according to local.rawValue
     var description : String {
         switch self {
         case .en_US: return "en_US";
@@ -56,15 +51,46 @@ enum RegionFormat:Int{
         case .ja_JP: return "ja_JP";
         case .de_DE: return "de_DE";
         case .local: return NSLocale.currentLocale().localeIdentifier
-            /* Don't forget to fill the description method if add your on Format ! */
+            /* Don't forget to fill the description method if you add your own Format ! */
             /*case .yourCase: return "yourCase_YOURCASE";*/ } }
+}
+
+// PRAGMA MARK: dateFormat Struct:
+struct YearMonthDayDateFormat: DateFormat {
+    
+    var numberOfComponents : Int {
+        return 4; }
+    
+    var description : String {
+        return "yyyyMMdd";
+    }
+}
+
+struct YearMonthDateFormat: DateFormat {
+    
+    var numberOfComponents : Int {
+        return 3;
+    }
+    
+    var description : String {
+        return "yyyyMM";
+    }
+}
+
+struct YearDateFormat: DateFormat {
+    
+    var numberOfComponents : Int {
+        return 2;
+    }
+    
+    var description : String {
+        return "yyyy";
+    }
 }
 
 class YAMDatePickerHelper: NSObject
 {
-    //    static let sharedInstance = YAMDatePickerHelper();
-    
-    private var currentDateFormat : DateFormat = .fullDate;
+    private var currentDateFormat : DateFormat = YearMonthDayDateFormat();
     private var currentRegionFormat : RegionFormat = .local
     private var dateFormater : NSDateFormatter = NSDateFormatter();
     private(set) var locale = NSLocale(localeIdentifier:RegionFormat.local.description);
@@ -73,6 +99,7 @@ class YAMDatePickerHelper: NSObject
     private lazy var months: [String] = self.getMonth();
     private lazy var thousand: [String] = self.getYearThousand();
     private lazy var unit: [String] = self.getYearDecimalAndUnit();
+    private let dateFormatArray: [DateFormat] = [YearMonthDayDateFormat(), YearMonthDateFormat(), YearDateFormat()]; // Give an index for each Struct
     weak var updateViewDelegate : UpdateViewProtocol?;
     
 }
@@ -110,12 +137,12 @@ extension YAMDatePickerHelper
         updateViewDelegate?.updateLabel();
     }
     
-    func setDateFormat(dateFormat: DateFormat, inPicker picker: UIPickerView)
+    func setDateFormat(dateFormat:DateFormat, inPicker picker: UIPickerView)
     {
         /* Take care of year and eventually month to keep track of selectedIndexs after reloadData*/
         let lastSelectedRows = getSelectedRowsWithFormatIndex(inPicker: picker);
         
-        currentDateFormat = dateFormat;
+        currentDateFormat = dateFormat
         picker .reloadAllComponents();
         picker.setNeedsLayout()
         
@@ -158,6 +185,7 @@ extension YAMDatePickerHelper
         updateViewDelegate?.updateLabel();
     }
 }
+
 // PRAGMA MARK: Get Methods:
 extension YAMDatePickerHelper
 {
@@ -173,8 +201,9 @@ extension YAMDatePickerHelper
         {
             years .append(String(index));
         }
-        years.append("-0");
-        for index in 0...50
+        years.append("-");
+        years.append("");
+        for index in 1...50
         {
             years .append(String(index));
         }
@@ -203,7 +232,12 @@ extension YAMDatePickerHelper
         return days;
     }
     
-    private func getRangeOfComponentsWithFormat(dateFormat: DateFormat) -> [String:Int]
+    func getFormatArray() -> [DateFormat]
+    {
+        return self.dateFormatArray;
+    }
+    
+    internal func getRangeOfComponentsWithFormat(dateFormat: DateFormat) -> [String:Int]
     {
         /* Return a dictionnary which contains by convention range for Year, Month and Day in current RegionFomat :*/
         let format : String =  NSDateFormatter.dateFormatFromTemplate(dateFormat.description, options: 0, locale:locale)!
@@ -255,15 +289,7 @@ extension YAMDatePickerHelper
 extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate
 {
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        
-        switch currentDateFormat {
-        case .fullDate:
-            return 4
-        case .mediumDate:
-            return 3
-        case.yearDate:
-            return 2;
-        }
+        return currentDateFormat.numberOfComponents;
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -336,24 +362,24 @@ extension YAMDatePickerHelper
 {
     func getStringRepresentationOfPicker(picker: UIPickerView) -> String
     {
-        let selectedRows = getSelectedRowsWithFormatIndex(inPicker: picker);
-        // get the Strings of selectedIndex in picker
-        var stringComponent = ["thousand" : thousand[selectedRows["thousand"]!], "unit" : unit[selectedRows["unit"]!]]
+        let selectedRows : [String : Int] = getSelectedRowsWithFormatIndex(inPicker: picker); // Output -> ["thousand" : 71, "unit" 63, "month" : 2, "day" :0]
+        let formatIndex : [String : Int] = getRangeOfComponentsWithFormat(currentDateFormat);  // Output -> ["year" : 2, "month" : 0, "day": 1]
+        let orderedFormatIndex :[(String, Int)] = formatIndex.sort{ $0.1 < $1.1 } // Output -> ["month" : 0, "day" : 1, "year" : 2]
+        
+        var stringComponent : [String : String] = ["thousand" : thousand[selectedRows["thousand"]!], "unit" : unit[selectedRows["unit"]!]]
         if let selectedRow = selectedRows["month"]
         { stringComponent["month"] = months[selectedRow]; }
         if let selectedRow = selectedRows["day"]
         { stringComponent["day"] = days[selectedRow]; }
-        
-        let formatIndex = getRangeOfComponentsWithFormat(currentDateFormat);
-        let orderedFormatIndex = formatIndex.sort{ $0.1 < $1.1 }
+        //stringComponent ; Output -> ["thousand" : "20", "unit" : "16", "month" : "3", "day" : "1"]
         
         var stringDateRepresentation = "";
-        for couple in orderedFormatIndex
+        for (name, _) in orderedFormatIndex
         {
-            if couple.0 == "year"
+            if name == "year"
             { stringDateRepresentation.appendContentsOf(stringComponent["thousand"]! + stringComponent["unit"]! + "  ") }
             else
-            { stringDateRepresentation.appendContentsOf(stringComponent[couple.0]! + "  ")}
+            { stringDateRepresentation.appendContentsOf(stringComponent[name]! + "  ")}
         }
         return stringDateRepresentation;
     }
