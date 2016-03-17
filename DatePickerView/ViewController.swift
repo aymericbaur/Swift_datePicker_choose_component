@@ -8,8 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UpdateViewProtocol
-{
+class ViewController: UIViewController, UpdateViewProtocol {
     @IBOutlet weak var dateFormatControl: UISegmentedControl!
     @IBOutlet weak var regionFormatControl: UISegmentedControl!
     @IBOutlet weak var datePicker: UIPickerView!
@@ -44,8 +43,7 @@ class ViewController: UIViewController, UpdateViewProtocol
     }
     
     //PRAGMA MARK: segmentedControl action
-    @IBAction func dateFormatChange(sender: UISegmentedControl)
-    {
+    @IBAction func dateFormatChange(sender: UISegmentedControl) {
         yAMDatePickerHelper.setDateFormat(dateFormatArray[sender.selectedSegmentIndex], inPicker: datePicker)
     }
     
@@ -55,8 +53,7 @@ class ViewController: UIViewController, UpdateViewProtocol
     }
     
     // PRAGMA MARK: set date and segmentedTitle
-    func setSegmentedFormatTitle()
-    {
+    func setSegmentedFormatTitle() {
         let locale = yAMDatePickerHelper.currentDateFormat.locale
         let LongFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0)
@@ -68,8 +65,7 @@ class ViewController: UIViewController, UpdateViewProtocol
         dateFormatControl.setTitle(shortFormat, forSegmentAtIndex: 2)
     }
     
-    func updateLabel()
-    {
+    func updateLabel() {
         dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker(datePicker)
     }
 }
