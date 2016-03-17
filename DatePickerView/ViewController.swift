@@ -15,6 +15,9 @@ class ViewController: UIViewController, UpdateViewProtocol
     @IBOutlet weak var datePicker: UIPickerView!
     @IBOutlet weak var dateLabel: UILabel!
     
+    /* Give an index for each Struct (Used for associate dateFormatSegmentedControl selected index to DateFormat value, otherwise you can comment it). */
+    private let dateFormatArray: [DateFormat] = [YearMonthDayDateFormat(), YearMonthDateFormat(), YearDateFormat()];
+    
     let yAMDatePickerHelper = YAMDatePickerHelper();
     
     override func viewDidLoad() {
@@ -44,7 +47,7 @@ class ViewController: UIViewController, UpdateViewProtocol
     //PRAGMA MARK: segmentedControl action
     @IBAction func dateFormatChange(sender: UISegmentedControl)
     {
-        yAMDatePickerHelper.setDateFormat(yAMDatePickerHelper.getFormatArray()[sender.selectedSegmentIndex], inPicker: datePicker)
+        yAMDatePickerHelper.setDateFormat(dateFormatArray[sender.selectedSegmentIndex], inPicker: datePicker)
     }
     
     @IBAction func regionFormatChange(sender: UISegmentedControl) {
@@ -56,13 +59,13 @@ class ViewController: UIViewController, UpdateViewProtocol
     func setSegmentedFormatTitle()
     {
         let locale = yAMDatePickerHelper.currentDateFormat.locale;
-        let LongFormat : String =  NSDateFormatter.dateFormatFromTemplate(yAMDatePickerHelper.getFormatArray()[0].description, options: 0, locale:locale)!
+        let LongFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0);
         
-        let mediumFormat : String =  NSDateFormatter.dateFormatFromTemplate(yAMDatePickerHelper.getFormatArray()[1].description, options: 0, locale:locale)!
+        let mediumFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(mediumFormat, forSegmentAtIndex: 1);
         
-        let shortFormat : String =  NSDateFormatter.dateFormatFromTemplate(yAMDatePickerHelper.getFormatArray()[2].description, options: 0, locale:locale)!
+        let shortFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(shortFormat, forSegmentAtIndex: 2);
     }
     

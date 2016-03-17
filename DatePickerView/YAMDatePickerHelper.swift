@@ -40,9 +40,6 @@ class YAMDatePickerHelper: NSObject
     private(set) var currentRegionFormat : RegionFormat = .local
 
     weak var updateViewDelegate : UpdateViewProtocol?;
-    
-    /* Give an index for each Struct (Used for associate dateFormatSegmentedControl selected index to DateFormat value, otherwise you can comment it). */
-    private let dateFormatArray: [DateFormat] = [YearMonthDayDateFormat(), YearMonthDateFormat(), YearDateFormat()];
 }
 
 // PRAGMA MARK: Reachable Methods Set:
@@ -89,11 +86,6 @@ extension YAMDatePickerHelper
 // PRAGMA MARK: Reachable Methods Get:
 extension YAMDatePickerHelper
 {
-    func getFormatArray() -> [DateFormat]
-    {
-        return self.dateFormatArray;
-    }
-    
     func getStringRepresentationOfPicker(picker: UIPickerView) -> String
     {
         return currentDateFormat.getStringRepresentationOfPicker(picker);
