@@ -9,7 +9,7 @@ import UIKit
 
 enum RegionFormat:Int{
     case en_US = 0, he ,ja_JP,de_DE, /*yourCaseHere, andHere,...,*/ local // Feel free to add your own RegionFormat by adding a case, but please keep ALWAYS .local at the last position => the segmenteControl will auto-update according to local.rawValue
-    var description : String {
+    var description: String {
         switch self {
         case .en_US: return "en_US"
         case .he: return "he_HE"
@@ -22,75 +22,66 @@ enum RegionFormat:Int{
 
 protocol DateFormat
 {
-    var description : String {get}
-    var numberOfComponents : Int {get}
     var locale: NSLocale {get set}
-    init()
+    var description: String {get}
+    var numberOfComponents: Int {get}
+    init();
     
     func numberOfRowsInComponent(component: Int) -> Int
     func titleForRowInComponent(component: Int, row: Int) -> String
     func widthForComponent(component: Int) -> CGFloat
-    func getRangeOfComponents() -> [String:Int]
-    func getSelectedRowsIndexInPicker (picker: UIPickerView) -> [String:Int]
-    func getStringRepresentationOfPicker(picker :UIPickerView) -> String
-    func setPickerAtStart(picker :UIPickerView)
+    func rangeOfComponents() -> [String:Int]
+    func selectedRowsIndexInPicker (picker: UIPickerView) -> [String:Int]
+    func stringRepresentationOfPicker(picker:UIPickerView) -> String
+    func setPickerAtStart(picker:UIPickerView)
     func setPickerWithSeletedRows(picker: UIPickerView, lastSelectedRows: [String:Int])
 }
 
 // PRAGMA MARK: DateFormat Struct:
 struct YearMonthDayDateFormat: DateFormat {
     
-    var description : String {
+    var description: String {
         return "yyyyMMdd"
     }
     
-    var locale: NSLocale {
-        get{
-            return self.locale
-        }
-        set(newLocale){
-            self.locale = newLocale
-        }
+    init() {
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
-
-    var numberOfComponents : Int {
+    var locale: NSLocale
+    
+    var numberOfComponents: Int {
         return 4 }
   }
 
 struct YearMonthDateFormat: DateFormat {
     
-    var numberOfComponents : Int {
+    var numberOfComponents: Int {
         return 3
     }
     
-    var locale: NSLocale {
-        get{
-            return self.locale
-        }
-        set(newLocale){
-            self.locale = newLocale
-        }
+    init() {
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
-    var description : String {
+    var locale: NSLocale
+    
+    var description: String {
         return "yyyyMM"
     }
 }
 struct YearDateFormat: DateFormat {
     
-    var numberOfComponents : Int {
+    var numberOfComponents: Int {
         return 2
     }
     
-    var locale: NSLocale {
-        get{
-            return self.locale
-        }
-        set(newLocale){
-            self.locale = newLocale
-        }
+    init() {
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
-    var description : String {
+    
+    var locale: NSLocale
+
+    var description: String {
         return "yyyy"
     }
 }
@@ -105,7 +96,7 @@ extension DateFormat {
     
     func numberOfRowsInComponent(component: Int) -> Int
     {
-        let formatIndex = self.getRangeOfComponents()
+        let formatIndex = self.rangeOfComponents()
         if component == formatIndex["year"]
         { return Model.thousand.count }
             
@@ -122,7 +113,7 @@ extension DateFormat {
     
     func titleForRowInComponent(component: Int, row: Int) -> String
     {
-        let formatIndex = self.getRangeOfComponents()
+        let formatIndex = self.rangeOfComponents()
         if component == formatIndex["year"]
         { return Model.thousand[row] }
             
@@ -139,7 +130,7 @@ extension DateFormat {
     
     func widthForComponent(component: Int) -> CGFloat
     {
-        let formatIndex = self.getRangeOfComponents()
+        let formatIndex = self.rangeOfComponents()
         if component == formatIndex["year"] || component == formatIndex["year"]!+1
         { return 50 }
             
@@ -152,17 +143,17 @@ extension DateFormat {
         return 0
     }
     
-    func getRangeOfComponents() -> [String:Int]
+    func rangeOfComponents() -> [String:Int]
     {
-        let format : String =  NSDateFormatter.dateFormatFromTemplate(self.description, options: 0, locale:locale)!
+        let format: String =  NSDateFormatter.dateFormatFromTemplate(self.description, options: 0, locale:locale)!
         
         var componentRelativePlace:[String: Int] = [String: Int]()
-        let yearRange : Range = format.rangeOfString("y")!
-        var dayRange : Range<String.CharacterView.Index>?
-        var monthRange : Range<String.CharacterView.Index>?
+        let yearRange: Range = format.rangeOfString("y")!
+        var dayRange: Range<String.CharacterView.Index>?
+        var monthRange: Range<String.CharacterView.Index>?
         var ranges = [yearRange]
         
-        if let monthRanges : Range = format.rangeOfString("M")
+        if let monthRanges: Range = format.rangeOfString("M")
         { monthRange = monthRanges; ranges.append(monthRange!) }
         
         if let dayRanges = format.rangeOfString("d")
@@ -174,17 +165,17 @@ extension DateFormat {
         componentRelativePlace["year"] = lastRelativeYearPlace
         
         if let _ = monthRange{
-            componentRelativePlace["month"] = sortedRanges.indexOf(monthRange!)! < lastRelativeYearPlace ? sortedRanges.indexOf(monthRange!)! : sortedRanges.indexOf(monthRange!)!+1 // "+1" because year fill 2 components !
+            componentRelativePlace["month"] = sortedRanges.indexOf(monthRange!)! < lastRelativeYearPlace ? sortedRanges.indexOf(monthRange!)!: sortedRanges.indexOf(monthRange!)!+1 // "+1" because year fill 2 components !
         }
         if let _ = dayRange{
-            componentRelativePlace["day"] = sortedRanges.indexOf(dayRange!)! < lastRelativeYearPlace ? sortedRanges.indexOf(dayRange!)! : sortedRanges.indexOf(dayRange!)!+1 // "+1" because year fill 2 components !
+            componentRelativePlace["day"] = sortedRanges.indexOf(dayRange!)! < lastRelativeYearPlace ? sortedRanges.indexOf(dayRange!)!: sortedRanges.indexOf(dayRange!)!+1 // "+1" because year fill 2 components !
         }
-        return componentRelativePlace  // Output -> ["year" : 2, "month" : 0, "day": 1]
+        return componentRelativePlace  // Output -> ["year": 2, "month": 0, "day": 1]
     }
     
-    func getSelectedRowsIndexInPicker (picker: UIPickerView) -> [String:Int]
+    func selectedRowsIndexInPicker (picker: UIPickerView) -> [String:Int]
     {
-        let formatIndex = self.getRangeOfComponents()
+        let formatIndex = self.rangeOfComponents()
         
         var componentRelativeIndex:[String: Int] = [String: Int]()
         
@@ -200,20 +191,20 @@ extension DateFormat {
         return componentRelativeIndex
     }
     
-    func getStringRepresentationOfPicker(picker :UIPickerView) -> String
+    func stringRepresentationOfPicker(picker:UIPickerView) -> String
     {
-        let formatIndex = self.getRangeOfComponents()  // Output -> ["year" : 2, "month" : 0, "day": 1]
-        let selectedRows:[String:Int] = getSelectedRowsIndexInPicker(picker) // Output -> ["thousand" : 71, "unit" 63, "month" : 2, "day" :0]
+        let formatIndex = self.rangeOfComponents()  // Output -> ["year": 2, "month": 0, "day": 1]
+        let selectedRows:[String:Int] = selectedRowsIndexInPicker(picker) // Output -> ["thousand": 71, "unit" 63, "month": 2, "day":0]
         
-        var stringComponent:[String:String] = ["thousand" : Model.thousand[selectedRows["thousand"]!], "unit" : Model.unit[selectedRows["unit"]!]]
+        var stringComponent:[String:String] = ["thousand": Model.thousand[selectedRows["thousand"]!], "unit": Model.unit[selectedRows["unit"]!]]
         if let selectedRow = selectedRows["month"]
         { stringComponent["month"] = Model.getMonth(locale)[selectedRow] }
         if let selectedRow = selectedRows["day"]
         { stringComponent["day"] = Model.days[selectedRow] }
-        //stringComponent  Output -> ["thousand" : "20", "unit" : "16", "month" : "3", "day" : "1"]
+        //stringComponent  Output -> ["thousand": "20", "unit": "16", "month": "3", "day": "1"]
         
         var stringDateRepresentation = ""
-        let orderedFormatIndex:[(String,Int)] = formatIndex.sort{ $0.1 < $1.1 } // Output -> ["month" : 0, "day" : 1, "year" : 2]
+        let orderedFormatIndex:[(String,Int)] = formatIndex.sort{ $0.1 < $1.1 } // Output -> ["month": 0, "day": 1, "year": 2]
         for (name, _) in orderedFormatIndex
         {
             if name == "year"
@@ -224,7 +215,7 @@ extension DateFormat {
         return stringDateRepresentation
     }
     
-    func setPickerAtStart(picker :UIPickerView)
+    func setPickerAtStart(picker:UIPickerView)
     {
         let date = NSDate()
         let components = NSCalendar(calendarIdentifier: "gregorian")!.components([.Year, .Month, .Day], fromDate: date)
@@ -234,7 +225,7 @@ extension DateFormat {
         let thousandNumbers =  "\(characters[0])" + "\(characters[1])"
         let unitNumbers = "\(characters[2])" + "\(characters[3])"
         
-        let formatIndex = self.getRangeOfComponents()
+        let formatIndex = self.rangeOfComponents()
         picker.selectRow(Model.thousand .indexOf(thousandNumbers)!, inComponent: formatIndex["year"]!, animated: false)
         picker.selectRow(Model.unit .indexOf(unitNumbers)!, inComponent: formatIndex["year"]!+1, animated: false)
         
@@ -247,7 +238,7 @@ extension DateFormat {
     
     func setPickerWithSeletedRows(picker: UIPickerView, lastSelectedRows: [String:Int])
     {
-        let formatIndex =  self.getRangeOfComponents()
+        let formatIndex =  self.rangeOfComponents()
         // Set Year component
         picker.selectRow(lastSelectedRows["thousand"]!, inComponent: formatIndex["year"]!, animated: false)
         picker.selectRow(lastSelectedRows["unit"]!, inComponent: formatIndex["year"]!+1, animated: false)
@@ -275,7 +266,7 @@ class Model: NSObject
     private static let days: [String] = Model.getDays()
     private static let thousand: [String] = Model.getYearThousand()
     private static let unit: [String] = Model.getYearDecimalAndUnit()
-    private static var dateFormater : NSDateFormatter = NSDateFormatter()
+    private static var dateFormater: NSDateFormatter = NSDateFormatter()
     // Add your own data here for custom component.
     
     // PRAGMA MARK: Get Data Methods:

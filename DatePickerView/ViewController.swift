@@ -33,7 +33,7 @@ class ViewController: UIViewController, UpdateViewProtocol
         for index in 0...RegionFormat.local.rawValue {
             regionFormatControl.insertSegmentWithTitle(RegionFormat(rawValue:index)!.description, atIndex: regionFormatControl.numberOfSegments, animated: false) }
         
-        // Select segment :
+        // Select segment:
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1
         
         // Set date at start:
@@ -58,18 +58,18 @@ class ViewController: UIViewController, UpdateViewProtocol
     func setSegmentedFormatTitle()
     {
         let locale = yAMDatePickerHelper.currentDateFormat.locale
-        let LongFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].description, options: 0, locale:locale)!
+        let LongFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0)
         
-        let mediumFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].description, options: 0, locale:locale)!
+        let mediumFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(mediumFormat, forSegmentAtIndex: 1)
         
-        let shortFormat : String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].description, options: 0, locale:locale)!
+        let shortFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(shortFormat, forSegmentAtIndex: 2)
     }
     
     func updateLabel()
     {
-        dateLabel.text = yAMDatePickerHelper.getStringRepresentationOfPicker(datePicker)
+        dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker(datePicker)
     }
 }

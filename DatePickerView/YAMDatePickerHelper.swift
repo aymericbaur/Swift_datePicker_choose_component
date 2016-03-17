@@ -18,15 +18,15 @@ import UIKit
 /* ########### ########### ########### ############ ############
 || You can use 3 set methods on the picker:
 ||
-||  • setDateFormat : If you only want months and years or only year..
-||      - default to : YearMonthDayDateFormat : yyyyMMdd
-||      - mediumformat : YearMonthDateFormat yyyyMM
-||      - shortFormat : YearDateFormat yyyy
+||  • setDateFormat: If you only want months and years or only year..
+||      - default to: YearMonthDayDateFormat: yyyyMMdd
+||      - mediumformat: YearMonthDateFormat yyyyMM
+||      - shortFormat: YearDateFormat yyyy
 ||
 ||  • setRegionFormat: If you want to force an US format for example.
-||      - default to :.local
-||      - .en : en_US
-||      - .de : de_DE
+||      - default to:.local
+||      - .en: en_US
+||      - .de: de_DE
 ||      - ....
 ||
 ||  • setPickerToCurrentDate: Set the selectedRows of the picker passed
@@ -36,10 +36,9 @@ import UIKit
 
 class YAMDatePickerHelper: NSObject
 {
-    private(set) var currentDateFormat : DateFormat = YearMonthDayDateFormat();
-    private(set) var currentRegionFormat : RegionFormat = .local
-    
-    weak var updateViewDelegate : UpdateViewProtocol?;
+    private(set) var currentDateFormat: DateFormat = YearMonthDayDateFormat();
+    private(set) var currentRegionFormat: RegionFormat = .local
+    weak var updateViewDelegate: UpdateViewProtocol?;
 }
 
 // PRAGMA MARK: Reachable Methods Set:
@@ -47,10 +46,10 @@ extension YAMDatePickerHelper
 {
     func setRegionFormat(regionFormat: RegionFormat, inPicker picker: UIPickerView)
     {
-        let lastSelectedRows = currentDateFormat.getSelectedRowsIndexInPicker(picker)
+        let lastSelectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         self.currentRegionFormat = regionFormat;
-        self.currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description);
+        self.currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
         
         picker .reloadAllComponents();
         picker.setNeedsLayout()
@@ -64,10 +63,11 @@ extension YAMDatePickerHelper
     func setDateFormat(dateFormat:DateFormat, inPicker picker: UIPickerView)
     {
         /* Take care of year and eventually month to keep track of selectedIndexs after reloadData*/
-        let lastSelectedRows = currentDateFormat.getSelectedRowsIndexInPicker(picker)
+        let lastSelectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         currentDateFormat = dateFormat
-        picker .reloadAllComponents();
+        currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
+        picker .reloadAllComponents()
         picker.setNeedsLayout()
         
         currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
@@ -86,9 +86,9 @@ extension YAMDatePickerHelper
 // PRAGMA MARK: Reachable Methods Get:
 extension YAMDatePickerHelper
 {
-    func getStringRepresentationOfPicker(picker: UIPickerView) -> String
+    func stringRepresentationOfPicker(picker: UIPickerView) -> String
     {
-        return currentDateFormat.getStringRepresentationOfPicker(picker);
+        return currentDateFormat.stringRepresentationOfPicker(picker);
     }
 }
 
