@@ -38,7 +38,7 @@ class YAMDatePickerHelper: NSObject
 {
     private(set) var currentDateFormat : DateFormat = YearMonthDayDateFormat();
     private(set) var currentRegionFormat : RegionFormat = .local
-
+    
     weak var updateViewDelegate : UpdateViewProtocol?;
 }
 
@@ -54,7 +54,7 @@ extension YAMDatePickerHelper
         
         picker .reloadAllComponents();
         picker.setNeedsLayout()
-
+        
         currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
         
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
@@ -121,4 +121,3 @@ protocol UpdateViewProtocol: class
 {
     func updateLabel();
 }
-
