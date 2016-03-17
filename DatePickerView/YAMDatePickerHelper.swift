@@ -36,9 +36,9 @@ import UIKit
 
 class YAMDatePickerHelper: NSObject
 {
-    private(set) var currentDateFormat: DateFormat = YearMonthDayDateFormat();
+    private(set) var currentDateFormat: DateFormat = YearMonthDayDateFormat()
     private(set) var currentRegionFormat: RegionFormat = .local
-    weak var updateViewDelegate: UpdateViewProtocol?;
+    weak var updateViewDelegate: UpdateViewProtocol?
 }
 
 // PRAGMA MARK: Reachable Methods Set:
@@ -48,16 +48,16 @@ extension YAMDatePickerHelper
     {
         let lastSelectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
-        self.currentRegionFormat = regionFormat;
+        self.currentRegionFormat = regionFormat
         self.currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
         
-        picker .reloadAllComponents();
+        picker .reloadAllComponents()
         picker.setNeedsLayout()
         
         currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
         
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
-        updateViewDelegate?.updateLabel();
+        updateViewDelegate?.updateLabel()
     }
     
     func setDateFormat(dateFormat:DateFormat, inPicker picker: UIPickerView)
@@ -72,14 +72,14 @@ extension YAMDatePickerHelper
         
         currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
-        updateViewDelegate?.updateLabel();
+        updateViewDelegate?.updateLabel()
     }
     
     func setPickerToCurrentDate(datePicker: UIPickerView)
     {
-        currentDateFormat.setPickerAtStart(datePicker);
+        currentDateFormat.setPickerAtStart(datePicker)
         // tell the viewController to refresh the View
-        updateViewDelegate?.updateLabel();
+        updateViewDelegate?.updateLabel()
     }
 }
 
@@ -88,7 +88,7 @@ extension YAMDatePickerHelper
 {
     func stringRepresentationOfPicker(picker: UIPickerView) -> String
     {
-        return currentDateFormat.stringRepresentationOfPicker(picker);
+        return currentDateFormat.stringRepresentationOfPicker(picker)
     }
 }
 
@@ -96,7 +96,7 @@ extension YAMDatePickerHelper
 extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate
 {
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return currentDateFormat.numberOfComponents;
+        return currentDateFormat.numberOfComponents
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
@@ -108,16 +108,16 @@ extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate
     }
     
     func pickerView(pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-        return currentDateFormat.widthForComponent(component);
+        return currentDateFormat.widthForComponent(component)
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        updateViewDelegate?.updateLabel();
+        updateViewDelegate?.updateLabel()
     }
 }
 
 // PRAGMA MARK: Update view protocol
 protocol UpdateViewProtocol: class
 {
-    func updateLabel();
+    func updateLabel()
 }

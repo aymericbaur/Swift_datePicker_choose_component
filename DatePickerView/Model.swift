@@ -22,10 +22,9 @@ enum RegionFormat:Int{
 
 protocol DateFormat
 {
-    var locale: NSLocale {get set}
+    var locale: NSLocale? {get set}
     var description: String {get}
     var numberOfComponents: Int {get}
-    init();
     
     func numberOfRowsInComponent(component: Int) -> Int
     func titleForRowInComponent(component: Int, row: Int) -> String
@@ -47,7 +46,8 @@ struct YearMonthDayDateFormat: DateFormat {
     init() {
         self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
-    var locale: NSLocale
+    
+    var locale: NSLocale?
     
     var numberOfComponents: Int {
         return 4 }
@@ -63,7 +63,7 @@ struct YearMonthDateFormat: DateFormat {
         self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
-    var locale: NSLocale
+    var locale: NSLocale?
     
     var description: String {
         return "yyyyMM"
@@ -79,7 +79,7 @@ struct YearDateFormat: DateFormat {
         self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
-    var locale: NSLocale
+    var locale: NSLocale?
 
     var description: String {
         return "yyyy"
@@ -270,7 +270,7 @@ class Model: NSObject
     // Add your own data here for custom component.
     
     // PRAGMA MARK: Get Data Methods:
-    private class func getMonth(locale:NSLocale) -> [String]
+    private class func getMonth(locale:NSLocale?) -> [String]
     {
         dateFormater.locale = locale
         return dateFormater.monthSymbols
