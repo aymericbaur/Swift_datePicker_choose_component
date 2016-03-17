@@ -14,7 +14,7 @@ class ViewController: UIViewController, UpdateViewProtocol
     @IBOutlet weak var regionFormatControl: UISegmentedControl!
     @IBOutlet weak var datePicker: UIPickerView!
     @IBOutlet weak var dateLabel: UILabel!
-   
+    
     let yAMDatePickerHelper = YAMDatePickerHelper();
     
     override func viewDidLoad() {
@@ -33,7 +33,7 @@ class ViewController: UIViewController, UpdateViewProtocol
         
         // Select segment :
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1;
-
+        
         // Set date at start:
         yAMDatePickerHelper.setPickerToCurrentDate(datePicker)
         
@@ -55,10 +55,10 @@ class ViewController: UIViewController, UpdateViewProtocol
     // PRAGMA MARK: set date and segmentedTitle
     func setSegmentedFormatTitle()
     {
-        let locale = yAMDatePickerHelper.locale;
+        let locale = yAMDatePickerHelper.currentDateFormat.locale;
         let LongFormat : String =  NSDateFormatter.dateFormatFromTemplate(yAMDatePickerHelper.getFormatArray()[0].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0);
-
+        
         let mediumFormat : String =  NSDateFormatter.dateFormatFromTemplate(yAMDatePickerHelper.getFormatArray()[1].description, options: 0, locale:locale)!
         dateFormatControl.setTitle(mediumFormat, forSegmentAtIndex: 1);
         
