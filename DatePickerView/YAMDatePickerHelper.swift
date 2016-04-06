@@ -29,8 +29,8 @@ import UIKit
 ||      - .de: de_DE
 ||      - ....
 ||
-||  • setPickerToCurrentDate: Set the selectedRows of the picker passed
-||      in argument to current date.
+||  • setPickerToDate: Set the selectedRows of the picker
+||      to the date passed in argument.
 ||
 || ########### ########### ########### ############ ############ */
 
@@ -43,15 +43,15 @@ class YAMDatePickerHelper: NSObject {
 // PRAGMA MARK: Reachable Methods Set:
 extension YAMDatePickerHelper {
     func setRegionFormat(regionFormat: RegionFormat, inPicker picker: UIPickerView) {
-        let lastSelectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
+        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         self.currentRegionFormat = regionFormat
         self.currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
         
         picker .reloadAllComponents()
-        picker.setNeedsLayout()
+        picker .setNeedsLayout()
         
-        currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
+        currentDateFormat.setPickerWithSeletedRows(picker, selectedRows: selectedRows)
         
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
         updateViewDelegate?.updateLabel()
@@ -59,20 +59,22 @@ extension YAMDatePickerHelper {
     
     func setDateFormat(dateFormat:DateFormat, inPicker picker: UIPickerView) {
         /* Take care of year and eventually month to keep track of selectedIndexs after reloadData*/
-        let lastSelectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
+        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         currentDateFormat = dateFormat
         currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
         picker .reloadAllComponents()
         picker.setNeedsLayout()
         
-        currentDateFormat.setPickerWithSeletedRows(picker, lastSelectedRows: lastSelectedRows)
+        currentDateFormat.setPickerWithSeletedRows(picker, selectedRows: selectedRows)
+        
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
         updateViewDelegate?.updateLabel()
     }
     
-    func setPickerToCurrentDate(datePicker: UIPickerView) {
-        currentDateFormat.setPickerAtStart(datePicker)
+    func setPickerToDate(datePicker: UIPickerView, date: NSDate) {
+        currentDateFormat.setPickerToDate(datePicker, date:date);
+       
         // tell the viewController to refresh the View
         updateViewDelegate?.updateLabel()
     }
@@ -80,8 +82,19 @@ extension YAMDatePickerHelper {
 
 // PRAGMA MARK: Reachable Methods Get:
 extension YAMDatePickerHelper {
+    
+    /** Returns the date actually displayed in the picker as String.
+     - returns: String which is the date actually displayed in the picker.
+     */
     func stringRepresentationOfPicker(picker: UIPickerView) -> String {
         return currentDateFormat.stringRepresentationOfPicker(picker)
+    }
+
+    /** Returns the date actually displayed in the picker as NSDate.
+     - returns: NSDate which is the date actually displayed in the picker.
+     */
+    func dateRepresentationOfPicker(picker: UIPickerView) -> NSDate {
+        return currentDateFormat.dateRepresentationOfPicker(picker)
     }
 }
 

@@ -28,17 +28,39 @@ protocol DateFormat {
     func numberOfRowsInComponent(component: Int) -> Int
     func titleForRowInComponent(component: Int, row: Int) -> String
     func widthForComponent(component: Int) -> CGFloat
+    func setPickerToDate(picker:UIPickerView, date:NSDate)
+    
+    /** Returns the range of each components for the current locale and dateFormat.
+    - returns: [String:Int] where String is the name of the component (e.g "year" or "month") and Int the relative position.
+      e.g. The return value for a full date (YYYY.MM.DD) with US format will year: ["Year":2, "month":0, "day":1].
+     */
     func rangeOfComponents() -> [String:Int]
+    
+    /** Returns the selected rows of the picker
+    - returns: [String:Int] where String is the name of the component (e.g "thousand", "unit", "month"...) and Int the selectedRow in component.
+     */
     func selectedRowsIndexInPicker (picker: UIPickerView) -> [String:Int]
+    
+    /** Returns the date actually displayed in the picker as String.
+    - returns: String which is the date actually displayed in the picker.
+     */
     func stringRepresentationOfPicker(picker:UIPickerView) -> String
-    func setPickerAtStart(picker:UIPickerView)
-    func setPickerWithSeletedRows(picker: UIPickerView, lastSelectedRows: [String:Int])
+  
+    /** Returns the date actually displayed in the picker as NSDate.
+    - returns: NSDate which is the date actually displayed in the picker.
+     */
+    func dateRepresentationOfPicker(picker:UIPickerView) -> NSDate
+    
+    /** Set the picker selectedRows in specified component with a set of indexes.
+    - parameter selectedRows [String:Int] where String is the name of the component (e.g "thousand, "unit", "month") and Int the row to select.
+    */
+    func setPickerWithSeletedRows(picker: UIPickerView, selectedRows: [String:Int])
 }
 
 // PRAGMA MARK: DateFormat Struct:
 struct YearMonthDayDateFormat: DateFormat {
     var description: String {
-        return "yyyyMMdd"
+        return "y/M/d"
     }
     
     init() {
@@ -63,7 +85,7 @@ struct YearMonthDateFormat: DateFormat {
     var locale: NSLocale?
     
     var description: String {
-        return "yyyyMM"
+        return "y/M"
     }
 }
 struct YearDateFormat: DateFormat {
@@ -78,7 +100,7 @@ struct YearDateFormat: DateFormat {
     var locale: NSLocale?
 
     var description: String {
-        return "yyyy"
+        return "y"
     }
 }
 
@@ -190,7 +212,7 @@ extension DateFormat {
         { stringComponent["month"] = Model.getMonth(locale)[selectedRow] }
         if let selectedRow = selectedRows["day"]
         { stringComponent["day"] = Model.days[selectedRow] }
-        //stringComponent  Output -> ["thousand": "20", "unit": "16", "month": "3", "day": "1"]
+        //stringComponent  Output -> ["thousand": "20", "unit": "16", "month": "March", "day": "1"]
         
         var stringDateRepresentation = ""
         let orderedFormatIndex:[(String,Int)] = formatIndex.sort{ $0.1 < $1.1 } // Output -> ["month": 0, "day": 1, "year": 2]
@@ -203,8 +225,35 @@ extension DateFormat {
         return stringDateRepresentation
     }
     
-    func setPickerAtStart(picker:UIPickerView) {
-        let date = NSDate()
+    func dateRepresentationOfPicker(picker:UIPickerView) -> NSDate {
+        /* Months and days are the selectedRows + 1 */
+        let selectedRows:[String:Int] = selectedRowsIndexInPicker(picker) // Output -> ["thousand": 71, "unit" 63, "month": 2, "day":0]
+
+        // Build the year: 
+        var year : Int = Int(Model.thousand[selectedRows["thousand"]!] + Model.unit[selectedRows["unit"]!])!;
+        
+        // Build the era symbol;
+        var era : String = "AD";
+        if (year < 0) { era = "BC"; year = abs(year) };
+        
+        // Build the string for the formater:
+        let formatter = NSDateFormatter();
+        
+        formatter.dateFormat = self.description + "/G"; // add the era to keep track of dates before Jesus.
+        var string = "";
+       
+        string.appendContentsOf("0" + "\(year)"); // Add "0" to avoid NSDate to convert year 16 in 2016 !
+        if let _ = selectedRows["month"]
+        {string.appendContentsOf("/" + "\(selectedRows["month"]! + 1)");}
+        if let _ = selectedRows["day"]
+        { string.appendContentsOf("/" + "\(selectedRows["day"]! + 1)");}
+        string.appendContentsOf("/" + "\(era)");
+
+        let date : NSDate = formatter.dateFromString(string)!;
+        return date;
+    }
+    
+    func setPickerToDate(picker:UIPickerView, date: NSDate) {
         let components = NSCalendar(calendarIdentifier: "gregorian")!.components([.Year, .Month, .Day], fromDate: date)
         
         let year =  String(components.year)
@@ -223,18 +272,18 @@ extension DateFormat {
         { picker.selectRow(components.day-1, inComponent: indexDay, animated: false) }
     }
     
-    func setPickerWithSeletedRows(picker: UIPickerView, lastSelectedRows: [String:Int]) {
+    func setPickerWithSeletedRows(picker: UIPickerView, selectedRows: [String:Int]) {
         let formatIndex =  self.rangeOfComponents()
         // Set Year component
-        picker.selectRow(lastSelectedRows["thousand"]!, inComponent: formatIndex["year"]!, animated: false)
-        picker.selectRow(lastSelectedRows["unit"]!, inComponent: formatIndex["year"]!+1, animated: false)
+        picker.selectRow(selectedRows["thousand"]!, inComponent: formatIndex["year"]!, animated: false)
+        picker.selectRow(selectedRows["unit"]!, inComponent: formatIndex["year"]!+1, animated: false)
         
-        if let selectedMonthRow = lastSelectedRows["month"], formatIndex =  formatIndex["month"] {
+        if let selectedMonthRow = selectedRows["month"], formatIndex =  formatIndex["month"] {
             // Set Month Component:
             picker.selectRow(selectedMonthRow, inComponent:formatIndex, animated: false)
         }
         
-        if let selectedDayRow = lastSelectedRows["day"], formatIndex = formatIndex["day"] {
+        if let selectedDayRow = selectedRows["day"], formatIndex = formatIndex["day"] {
             // Set Day Component:
             picker.selectRow(selectedDayRow, inComponent: formatIndex, animated: false)
         }
@@ -255,41 +304,50 @@ class Model: NSObject {
     // Add your own data here for custom component.
     
     // PRAGMA MARK: Get Data Methods:
+    
+    /** Returns the translated months' name
+    - returns: [String] with the translated months' name.
+    */
     private class func getMonth(locale:NSLocale?) -> [String] {
         dateFormater.locale = locale
         return dateFormater.monthSymbols
     }
     
+    /** Returns year thousands.
+     - returns: [String] with years thousands from -50 to 50.
+     */
     private class func getYearThousand() -> [String] {
         var years = [String]()
-        for index in -50..<0
-        {
+        for index in -50..<0 {
             years .append(String(index))
         }
         years.append("-")
         years.append("")
-        for index in 1...50
-        {
+        for index in 1...50 {
             years .append(String(index))
         }
         return years
     }
     
+    /** Returns year decimal
+     - returns: [String] with years decimals and units from 0 to 99.
+     */
     private class func getYearDecimalAndUnit() -> [String] {
         var years = [String]()
-        for index in 00...99
-        {
+        for index in 00...99 {
             years .append(String(format: "%02d", index))
         }
         return years
     }
     
+    /** Returns the days as String
+     - returns: [String] with days from 1 to 31.
+     */
     private class func getDays() -> [String] {
         var days = [String]()
         let numberMaxOfDayPerMonthForTheCurrentCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!.maximumRangeOfUnit(NSCalendarUnit.Day)
         
-        for index in 1...numberMaxOfDayPerMonthForTheCurrentCalendar.length
-        {
+        for index in 1...numberMaxOfDayPerMonthForTheCurrentCalendar.length {
             days .append(String(format: "%02d", index))
         }
         return days

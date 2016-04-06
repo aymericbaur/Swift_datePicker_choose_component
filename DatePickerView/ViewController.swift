@@ -35,8 +35,8 @@ class ViewController: UIViewController, UpdateViewProtocol {
         // Select segment:
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1
         
-        // Set date at start:
-        yAMDatePickerHelper.setPickerToCurrentDate(datePicker)
+        // Set date to current date at start:
+        yAMDatePickerHelper.setPickerToDate(datePicker, date: NSDate())
         
         // Update SegmentedControlDateFormat title according to locale format:
         setSegmentedFormatTitle()
@@ -67,5 +67,9 @@ class ViewController: UIViewController, UpdateViewProtocol {
     
     func updateLabel() {
         dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker(datePicker)
+        
+        let datef = NSDateFormatter();
+        datef.dateFormat = yAMDatePickerHelper.currentDateFormat.description+"/G";
+        print(datef.stringFromDate(yAMDatePickerHelper.dateRepresentationOfPicker(datePicker)))
     }
 }
