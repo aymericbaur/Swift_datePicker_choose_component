@@ -27,8 +27,13 @@ class ViewController: UIViewController, UpdateViewProtocol {
         // Set the delegate to self to have a call-back mechanism:
         yAMDatePickerHelper.updateViewDelegate = self
         
+        // Customize the RegionFormat or the DateFormat if needed:
+        //yAMDatePickerHelper.setDateFormat(YearMonthDayDateFormat()) // Optional
+        //yAMDatePickerHelper.setRegionFormat(.locale)  // Optional
+        
         // Set picker to current date at start (customisation):
         yAMDatePickerHelper.setPickerToDate(NSDate())
+        
         // Or you can here set a custom date:
         /* let dateFormatter = NSDateFormatter();
         dateFormatter.dateFormat = yAMDatePickerHelper.currentDateFormat.description;

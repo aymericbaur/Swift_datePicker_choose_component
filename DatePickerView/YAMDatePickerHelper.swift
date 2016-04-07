@@ -30,17 +30,16 @@ import UIKit
 ||      - .de: de_DE
 ||      - ....
 ||
-||  • setPickerToDate: Set the selectedRows of the picker
-||      to the date passed in argument.
+||  • setPickerToDate(date: NSDate): Set the picker to the date passed in argument.
 ||
 || ########### ########### ########### ############ ############ */
 
 /* ########### ########### ########### ############ ############
  || You can use 2 get methods on the picker:
  ||
- ||  • stringRepresentationOfPicker: Returns the date displayed in the picker as String.
+ ||  • stringRepresentationOfPicker(): Returns the date displayed in the picker as String.
  ||
- ||  • dateRepresentationOfPicker: Returns the date displayed in the picker as NSDate or nil if date is invalid.
+ ||  • dateRepresentationOfPicker(): Returns the date displayed in the picker as NSDate or nil if date is invalid.
  ||
  || ########### ########### ########### ############ ############ */
 

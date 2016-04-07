@@ -181,7 +181,6 @@
 				TargetAttributes = {
 					5919DC261C872030008F9D60 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = 4QR9JM5JBA;
 					};
 					5919DC3A1C872030008F9D60 = {
 						CreatedOnToolsVersion = 7.1;
@@ -390,7 +389,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = DatePickerView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yam.DatePickerView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -401,7 +402,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = DatePickerView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yam.DatePickerView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
