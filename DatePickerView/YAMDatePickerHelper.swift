@@ -46,7 +46,7 @@ import UIKit
 // PRAGMA MARK: - YAMDatePickerHelper Class:
 class YAMDatePickerHelper: NSObject {
     private(set) var currentDateFormat: DateFormat = YearMonthDayDateFormat()
-    private(set) var currentRegionFormat: RegionFormat = .locale
+    private(set) var currentRegionFormat: RegionFormat = .local
     private(set) var picker: UIPickerView!;
 
     weak var updateViewDelegate: UpdateViewProtocol?

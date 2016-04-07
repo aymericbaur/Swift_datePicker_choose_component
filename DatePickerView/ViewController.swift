@@ -42,7 +42,7 @@ class ViewController: UIViewController, UpdateViewProtocol {
         /* ######### Set the titles of dateFormat/regionFormatSegmentedControls ######### */
         // Update regionFormatControl number of component and title according to RegionFormat enum:
         regionFormatControl.removeAllSegments()
-        for index in 0...RegionFormat.locale.rawValue {
+        for index in 0...RegionFormat.local.rawValue {
             regionFormatControl.insertSegmentWithTitle(RegionFormat(rawValue:index)!.description, atIndex: regionFormatControl.numberOfSegments, animated: false) }
         // Select last segment(should be locale.):
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1

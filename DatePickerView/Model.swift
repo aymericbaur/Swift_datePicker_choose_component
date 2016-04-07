@@ -9,14 +9,14 @@ import UIKit
 
 // PRAGMA MARK: - RegionFormat enum:
 enum RegionFormat:Int{
-    case en_US = 0, he ,ja_JP,de_DE, /*yourCaseHere, andHere,...,*/ locale // Feel free to add your own RegionFormat by adding a case, but please keep ALWAYS .local at the last position => the segmenteControl will auto-update according to local.rawValue
+    case en_US = 0, he ,ja_JP,de_DE, /*yourCaseHere, andHere,...,*/ local // Feel free to add your own RegionFormat by adding a case, but please keep ALWAYS .local at the last position => the segmenteControl will auto-update according to local.rawValue
     var description: String {
         switch self {
         case .en_US: return "en_US"
         case .he: return "he_HE"
         case .ja_JP: return "ja_JP"
         case .de_DE: return "de_DE"
-        case .locale: return NSLocale.currentLocale().localeIdentifier
+        case .local: return NSLocale.currentLocale().localeIdentifier
             /* Don't forget to fill the description method if you add your own Format ! */
             /*case .yourCase: return "yourCase_YOURCASE"*/ } }
 }
@@ -83,7 +83,7 @@ struct YearMonthDayDateFormat: DateFormat {
         return "yyyyMMdd"
     }
     init() {
-        self.locale = NSLocale(localeIdentifier:RegionFormat.locale.description)
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
     var locale: NSLocale?
@@ -98,7 +98,7 @@ struct YearMonthDateFormat: DateFormat {
     }
     
     init() {
-        self.locale = NSLocale(localeIdentifier:RegionFormat.locale.description)
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
     var locale: NSLocale?
@@ -118,7 +118,7 @@ struct YearDateFormat: DateFormat {
     }
     
     init() {
-        self.locale = NSLocale(localeIdentifier:RegionFormat.locale.description)
+        self.locale = NSLocale(localeIdentifier:RegionFormat.local.description)
     }
     
     var locale: NSLocale?
