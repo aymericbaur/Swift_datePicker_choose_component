@@ -17,59 +17,67 @@ class ViewController: UIViewController, UpdateViewProtocol {
     /* Give an index for each Struct (Used for associate dateFormatSegmentedControl selected index to DateFormat value, otherwise you can comment it). */
     private let dateFormatArray: [DateFormat] = [YearMonthDayDateFormat(), YearMonthDateFormat(), YearDateFormat()]
     
-    let yAMDatePickerHelper = YAMDatePickerHelper()
+    var yAMDatePickerHelper: YAMDatePickerHelper!;
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Give the PickerView its delegate and dataSource:
-        datePicker.delegate = yAMDatePickerHelper
-        datePicker.dataSource = yAMDatePickerHelper
+        // Init the helper with the desired picker:
+        yAMDatePickerHelper = YAMDatePickerHelper(picker: datePicker)
+    
+        // Set the delegate to self to have a call-back mechanism:
         yAMDatePickerHelper.updateViewDelegate = self
         
-        // Update SegmentedControlRegionFormat number of component and title according to RegionFormat enum:
+        // Set picker to current date at start (customisation):
+        yAMDatePickerHelper.setPickerToDate(NSDate())
+        // Or you can here set a custom date:
+        /* let dateFormatter = NSDateFormatter();
+        dateFormatter.dateFormat = yAMDatePickerHelper.currentDateFormat.description;
+        yAMDatePickerHelper.setPickerToDate(dateFormatter.dateFromString("1774/07/04/AD")!); */ // Assume for the example: currentDateFormat = YearMonthDayDateFormat !
+    
+        /* ######### Set the titles of dateFormat/regionFormatSegmentedControls ######### */
+        // Update regionFormatControl number of component and title according to RegionFormat enum:
         regionFormatControl.removeAllSegments()
-        for index in 0...RegionFormat.local.rawValue {
+        for index in 0...RegionFormat.locale.rawValue {
             regionFormatControl.insertSegmentWithTitle(RegionFormat(rawValue:index)!.description, atIndex: regionFormatControl.numberOfSegments, animated: false) }
-        
-        // Select segment:
+        // Select last segment(should be locale.):
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1
         
-        // Set date to current date at start:
-        yAMDatePickerHelper.setPickerToDate(datePicker, date: NSDate())
-        
-        // Update SegmentedControlDateFormat title according to locale format:
+        // Update dateFormatControl title according to locale format:
         setSegmentedFormatTitle()
     }
     
-    //PRAGMA MARK: segmentedControl action
+    //PRAGMA MARK: - segmentedControl action
     @IBAction func dateFormatChange(sender: UISegmentedControl) {
-        yAMDatePickerHelper.setDateFormat(dateFormatArray[sender.selectedSegmentIndex], inPicker: datePicker)
+        yAMDatePickerHelper.setDateFormat(dateFormatArray[sender.selectedSegmentIndex])
     }
     
     @IBAction func regionFormatChange(sender: UISegmentedControl) {
-        yAMDatePickerHelper.setRegionFormat(RegionFormat(rawValue: sender.selectedSegmentIndex)!, inPicker: datePicker)
+        yAMDatePickerHelper.setRegionFormat(RegionFormat(rawValue: sender.selectedSegmentIndex)!)
         setSegmentedFormatTitle()
     }
     
-    // PRAGMA MARK: set date and segmentedTitle
+    // PRAGMA MARK: - set date and segmentedTitle
     func setSegmentedFormatTitle() {
         let locale = yAMDatePickerHelper.currentDateFormat.locale
-        let LongFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].description, options: 0, locale:locale)!
+        let LongFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].convenienceDescription, options: 0, locale:locale)!
         dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0)
         
-        let mediumFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].description, options: 0, locale:locale)!
+        let mediumFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].convenienceDescription, options: 0, locale:locale)!
         dateFormatControl.setTitle(mediumFormat, forSegmentAtIndex: 1)
         
-        let shortFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].description, options: 0, locale:locale)!
+        let shortFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].convenienceDescription, options: 0, locale:locale)!
         dateFormatControl.setTitle(shortFormat, forSegmentAtIndex: 2)
     }
     
     func updateLabel() {
-        dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker(datePicker)
+        // Update the views:
+        dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker()
         
-        let datef = NSDateFormatter();
-        datef.dateFormat = yAMDatePickerHelper.currentDateFormat.description+"/G";
-        print(datef.stringFromDate(yAMDatePickerHelper.dateRepresentationOfPicker(datePicker)))
+        // Print the NSDate represented by the picker as String.
+        let dateFormat = NSDateFormatter();
+        dateFormat.dateFormat = yAMDatePickerHelper.currentDateFormat.description;
+        if let date = yAMDatePickerHelper.dateRepresentationOfPicker() {
+            print(dateFormat.stringFromDate(date))
+        }
     }
 }

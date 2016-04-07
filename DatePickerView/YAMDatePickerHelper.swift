@@ -11,9 +11,10 @@ import UIKit
 ||
 || 1) Just add the YAMDatePickerHelper file to your project and make sure "Copy if needed" is checked.
 || 2) Add an UIPickerView to your view and make a referenced outlet if it was created with stroyboard.
-|| 3) Set the delegate of the picker with an instance of YAMDatePickerHelper (Do NOT set the delegate and dataSource with the storyboard !).
-|| 4) Eventually customise the appearance with the set methods.
-|| 5) Eventually but recommended, set the picker to current date.*/
+|| 3) Create an instance of YAMDatePickerHelper and pass in argument the picker you want to control. It will set the delegate and dataSource automatically (Do NOT set the delegate and dataSource with the storyboard !).
+|| 4) Set the updateViewProtocol delegate to provide a call-back mechanism and tell the VC to tell the views to update.
+|| 5) Eventually customise the appearance (dateFormat and regionFormat) with the set methods.
+|| 6) Eventually but recommended, set the picker to current date.*/
 
 /* ########### ########### ########### ############ ############
 || You can use 3 set methods on the picker:
@@ -34,15 +35,38 @@ import UIKit
 ||
 || ########### ########### ########### ############ ############ */
 
+/* ########### ########### ########### ############ ############
+ || You can use 2 get methods on the picker:
+ ||
+ ||  • stringRepresentationOfPicker: Returns the date displayed in the picker as String.
+ ||
+ ||  • dateRepresentationOfPicker: Returns the date displayed in the picker as NSDate or nil if date is invalid.
+ ||
+ || ########### ########### ########### ############ ############ */
+
+// PRAGMA MARK: - YAMDatePickerHelper Class:
 class YAMDatePickerHelper: NSObject {
     private(set) var currentDateFormat: DateFormat = YearMonthDayDateFormat()
-    private(set) var currentRegionFormat: RegionFormat = .local
+    private(set) var currentRegionFormat: RegionFormat = .locale
+    private(set) var picker: UIPickerView!;
+
     weak var updateViewDelegate: UpdateViewProtocol?
+    
+    init(picker: UIPickerView) {
+        super.init();
+        self.picker = picker;
+        self.picker.delegate = self;
+        self.picker.dataSource = self;
+    }
 }
 
 // PRAGMA MARK: Reachable Methods Set:
 extension YAMDatePickerHelper {
-    func setRegionFormat(regionFormat: RegionFormat, inPicker picker: UIPickerView) {
+    /** Set the RegionFormat to display.
+    - E.g: "July 4. 1776" will become "4 Juli 1776" in German.
+     */
+    func setRegionFormat(regionFormat: RegionFormat) {
+        /* Take care of year, eventually months and days to keep track of selectedIndexes after reloadData */
         let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         self.currentRegionFormat = regionFormat
@@ -56,9 +80,9 @@ extension YAMDatePickerHelper {
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
         updateViewDelegate?.updateLabel()
     }
-    
-    func setDateFormat(dateFormat:DateFormat, inPicker picker: UIPickerView) {
-        /* Take care of year and eventually month to keep track of selectedIndexs after reloadData*/
+    /** Set the DateFormat (yyyyMMdd, yyyyMM, yyyy) to display.  */
+    func setDateFormat(dateFormat:DateFormat) {
+        /* Take care of year and eventually months to keep track of selectedIndexes after reloadData */
         let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
         
         currentDateFormat = dateFormat
@@ -72,8 +96,8 @@ extension YAMDatePickerHelper {
         updateViewDelegate?.updateLabel()
     }
     
-    func setPickerToDate(datePicker: UIPickerView, date: NSDate) {
-        currentDateFormat.setPickerToDate(datePicker, date:date);
+    func setPickerToDate(date: NSDate) {
+        currentDateFormat.setPickerToDate(picker, date:date);
        
         // tell the viewController to refresh the View
         updateViewDelegate?.updateLabel()
@@ -82,23 +106,22 @@ extension YAMDatePickerHelper {
 
 // PRAGMA MARK: Reachable Methods Get:
 extension YAMDatePickerHelper {
-    
     /** Returns the date actually displayed in the picker as String.
      - returns: String which is the date actually displayed in the picker.
      */
-    func stringRepresentationOfPicker(picker: UIPickerView) -> String {
+    func stringRepresentationOfPicker() -> String {
         return currentDateFormat.stringRepresentationOfPicker(picker)
     }
 
     /** Returns the date actually displayed in the picker as NSDate.
      - returns: NSDate which is the date actually displayed in the picker.
      */
-    func dateRepresentationOfPicker(picker: UIPickerView) -> NSDate {
+    func dateRepresentationOfPicker() -> NSDate? {
         return currentDateFormat.dateRepresentationOfPicker(picker)
     }
 }
 
-// PRAGMA MARK: PickerDelegate and dataSource:
+// PRAGMA MARK: - PickerDelegate and dataSource:
 extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate {
     func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
         return currentDateFormat.numberOfComponents
@@ -117,11 +140,14 @@ extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate {
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // Solve the errors when the user select a new row;
+        currentDateFormat.handleErrorsFromUserChoice(pickerView);
         updateViewDelegate?.updateLabel()
     }
 }
 
 // PRAGMA MARK: Update view protocol
 protocol UpdateViewProtocol: class {
+    /** Tell the viewController to update the views */
     func updateLabel()
 }
