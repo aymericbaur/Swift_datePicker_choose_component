@@ -1,6 +1,6 @@
 # Swift_DatePickerLike_component_with_format
 
-A Swift `UIPickerView` to emulate the `UIDatePicker` behavior. It allows you to choose **YearMonth** or **Year** format and **quick** select a date *far in the past*.
+A Swift `UIPickerView` to emulate the `UIDatePicker` behavior. It allows you to choose **YearMonth** or **Year** format and **quick** select a date ***far in the past***.
 
 <img src="https://cloud.githubusercontent.com/assets/17645306/14368420/e28d9f0c-fd1d-11e5-8cec-dacd62efdeb3.png" height="400"> <img src="https://cloud.githubusercontent.com/assets/17645306/14368422/e2902376-fd1d-11e5-8058-fccc5bf4328f.png" height="400"> <img src="https://cloud.githubusercontent.com/assets/17645306/14368421/e28eaf8c-fd1d-11e5-9e2d-d05f9139cda0.png" height="400"> <img src="https://cloud.githubusercontent.com/assets/17645306/14368419/e28b7902-fd1d-11e5-9672-d9f3c7c712f9.png" height="400"> <img src="https://cloud.githubusercontent.com/assets/17645306/14368418/e28a979e-fd1d-11e5-9616-48a507b98e31.png" height="400">
 
@@ -9,11 +9,11 @@ A Swift `UIPickerView` to emulate the `UIDatePicker` behavior. It allows you to 
 -----------------------------------------------------------------------------------------------------------------------
 
 1. Just add the ***YAMDatePickerHelper*** file to your project and make sure "Copy if needed" is checked.
-2. Add an `UIPickerView` to your view and make a referenced outlet if it was created with stroyboard.
-3. Create an instance of ***YAMDatePickerHelper*** and pass in argument the picker you want to control. It will set the *delegate* and *dataSource* automatically (Do NOT set the *delegate* and *dataSource* with the storyboard !).
-4. Set the updateViewProtocol delegate to provide a call-back mechanism and tell the VC to tell the views to update.
-5. Eventually customise the appearance (*dateFormat* and *regionFormat*) with the set methods.
-6. Eventually but recommended, set the picker to current date.
+2. Add an `UIPickerView` to your *view* and make a *referenced outlet* if it was created with stroyboard.
+3. Create an instance of ***YAMDatePickerHelper*** and pass in argument the `UIPicker` you want to control. It will set the *delegate* and *dataSource* automatically (Do NOT set the *delegate* and *dataSource* with the storyboard !).
+4. Set the `UpdateViewProtocol` *delegate* to provide a call-back mechanism and tell the *VC* to tell the *views* to update.
+5. Eventually customize the appearance (*dateFormat* and *regionFormat*) with the set methods.
+6. Eventually but recommended, set the *picker* to current date.
 
   
 -----------------------------------------------------------------------------------------------------------------------
@@ -66,12 +66,12 @@ A Swift `UIPickerView` to emulate the `UIDatePicker` behavior. It allows you to 
     
 
 -----------------------------------------------------------------------------------------------------------------------
-#### Tell the `viewController` to update the Views:
+#### Tell the `ViewController` to update the *Views*:
 -----------------------------------------------------------------------------------------------------------------------
 
 - Use the `UpdateViewProtocol` declare in `YAMDatePickerHelper.swift`
-- Make your `viewController` conform to `UpdateViewProtocol` and implement the methods
-- Set your `viewController` as delegate e.g in the `viewDidLoad` method : `yAMDatePickerHelper.updateViewDelegate = self`
+- Make your `ViewController` conform to `UpdateViewProtocol` and implement the methods
+- Set your `ViewController` as *delegate* e.g in the `viewDidLoad` method : `yAMDatePickerHelper.updateViewDelegate = self`
 
 -----------------------------------------------------------------------------------------------------------------------
 #### License 
@@ -87,4 +87,6 @@ A Swift `UIPickerView` to emulate the `UIDatePicker` behavior. It allows you to 
 -----------------------------------------------------------------------------------------------------------------------
 #### Special thanks
 -----------------------------------------------------------------------------------------------------------------------
+[Céroce](https://github.com/Ceroce)
 
+[AliSoftware](https://github.com/AliSoftware) and his [blog](http://alisoftware.github.io)
