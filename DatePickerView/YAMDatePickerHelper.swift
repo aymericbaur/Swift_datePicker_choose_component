@@ -30,7 +30,7 @@ import UIKit
 ||      - .de: de_DE
 ||      - ....
 ||
-||  • setPickerToDate(date: NSDate): Set the picker to the date passed in argument.
+||  • setPickerToDate(date: Date): Set the picker to the date passed in argument.
 ||
 || ########### ########### ########### ############ ############ */
 
@@ -39,7 +39,7 @@ import UIKit
  ||
  ||  • stringRepresentationOfPicker(): Returns the date displayed in the picker as String.
  ||
- ||  • dateRepresentationOfPicker(): Returns the date displayed in the picker as NSDate or nil if date is invalid.
+ ||  • dateRepresentationOfPicker(): Returns the date displayed in the picker as Date or nil if date is invalid.
  ||
  || ########### ########### ########### ############ ############ */
 
@@ -66,15 +66,15 @@ extension YAMDatePickerHelper {
      */
     func setRegionFormat(regionFormat: RegionFormat) {
         /* Take care of year, eventually months and days to keep track of selectedIndexes after reloadData */
-        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
+        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker: picker)
         
         self.currentRegionFormat = regionFormat
-        self.currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
+        self.currentDateFormat.locale = Locale(identifier: currentRegionFormat.description)
         
         picker .reloadAllComponents()
         picker .setNeedsLayout()
         
-        currentDateFormat.setPickerWithSeletedRows(picker, selectedRows: selectedRows)
+        currentDateFormat.setPickerWithSeletedRows(picker: picker, selectedRows: selectedRows)
         
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
         updateViewDelegate?.updateLabel()
@@ -82,21 +82,21 @@ extension YAMDatePickerHelper {
     /** Set the DateFormat (yyyyMMdd, yyyyMM, yyyy) to display.  */
     func setDateFormat(dateFormat:DateFormat) {
         /* Take care of year and eventually months to keep track of selectedIndexes after reloadData */
-        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker)
+        let selectedRows = currentDateFormat.selectedRowsIndexInPicker(picker: picker)
         
         currentDateFormat = dateFormat
-        currentDateFormat.locale = NSLocale(localeIdentifier: currentRegionFormat.description)
+        currentDateFormat.locale = Locale(identifier: currentRegionFormat.description)
         picker .reloadAllComponents()
         picker.setNeedsLayout()
         
-        currentDateFormat.setPickerWithSeletedRows(picker, selectedRows: selectedRows)
+        currentDateFormat.setPickerWithSeletedRows(picker: picker, selectedRows: selectedRows)
         
         // tell the viewController to refresh the views if needed (e.g the dateLabel)
         updateViewDelegate?.updateLabel()
     }
     
-    func setPickerToDate(date: NSDate) {
-        currentDateFormat.setPickerToDate(picker, date:date);
+    func setPickerToDate(date: Date) {
+        currentDateFormat.setPickerToDate(picker: picker, date:date);
        
         // tell the viewController to refresh the View
         updateViewDelegate?.updateLabel()
@@ -109,38 +109,38 @@ extension YAMDatePickerHelper {
      - returns: String which is the date actually displayed in the picker.
      */
     func stringRepresentationOfPicker() -> String {
-        return currentDateFormat.stringRepresentationOfPicker(picker)
+        return currentDateFormat.stringRepresentationOfPicker(picker: picker)
     }
 
-    /** Returns the date actually displayed in the picker as NSDate.
-     - returns: NSDate which is the date actually displayed in the picker.
+    /** Returns the date actually displayed in the picker as Date.
+     - returns: Date which is the date actually displayed in the picker.
      */
-    func dateRepresentationOfPicker() -> NSDate? {
-        return currentDateFormat.dateRepresentationOfPicker(picker)
+    func dateRepresentationOfPicker() -> Date? {
+        return currentDateFormat.dateRepresentationOfPicker(picker: picker)
     }
 }
 
 // PRAGMA MARK: - PickerDelegate and dataSource:
 extension YAMDatePickerHelper:UIPickerViewDataSource,UIPickerViewDelegate {
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return currentDateFormat.numberOfRowsInComponent(component: component)
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return currentDateFormat.numberOfComponents
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return currentDateFormat.numberOfRowsInComponent(component)
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return currentDateFormat.titleForRowInComponent(component: component, row: row)
     }
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return currentDateFormat.titleForRowInComponent(component, row: row)
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+        return currentDateFormat.widthForComponent(component: component)
     }
     
-    func pickerView(pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-        return currentDateFormat.widthForComponent(component)
-    }
-    
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         // Solve the errors when the user select a new row;
-        currentDateFormat.handleErrorsFromUserChoice(pickerView);
+        currentDateFormat.handleErrorsFromUserChoice(picker: pickerView);
         updateViewDelegate?.updateLabel()
     }
 }

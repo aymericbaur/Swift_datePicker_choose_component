@@ -32,7 +32,7 @@ class ViewController: UIViewController, UpdateViewProtocol {
         //yAMDatePickerHelper.setRegionFormat(.locale)  // Optional
         
         // Set picker to current date at start (customisation):
-        yAMDatePickerHelper.setPickerToDate(NSDate())
+        yAMDatePickerHelper.setPickerToDate(date: Date())
         
         // Or you can here set a custom date:
         /* let dateFormatter = NSDateFormatter();
@@ -43,7 +43,7 @@ class ViewController: UIViewController, UpdateViewProtocol {
         // Update regionFormatControl number of component and title according to RegionFormat enum:
         regionFormatControl.removeAllSegments()
         for index in 0...RegionFormat.local.rawValue {
-            regionFormatControl.insertSegmentWithTitle(RegionFormat(rawValue:index)!.description, atIndex: regionFormatControl.numberOfSegments, animated: false) }
+            regionFormatControl.insertSegment(withTitle: RegionFormat(rawValue:index)!.description, at: regionFormatControl.numberOfSegments, animated: false) }
         // Select last segment(should be locale.):
         regionFormatControl.selectedSegmentIndex = regionFormatControl.numberOfSegments-1
         
@@ -53,25 +53,25 @@ class ViewController: UIViewController, UpdateViewProtocol {
     
     //PRAGMA MARK: - segmentedControl action
     @IBAction func dateFormatChange(sender: UISegmentedControl) {
-        yAMDatePickerHelper.setDateFormat(dateFormatArray[sender.selectedSegmentIndex])
+        yAMDatePickerHelper.setDateFormat(dateFormat: dateFormatArray[sender.selectedSegmentIndex])
     }
     
     @IBAction func regionFormatChange(sender: UISegmentedControl) {
-        yAMDatePickerHelper.setRegionFormat(RegionFormat(rawValue: sender.selectedSegmentIndex)!)
+        yAMDatePickerHelper.setRegionFormat(regionFormat: RegionFormat(rawValue: sender.selectedSegmentIndex)!)
         setSegmentedFormatTitle()
     }
     
     // PRAGMA MARK: - set date and segmentedTitle
     func setSegmentedFormatTitle() {
         let locale = yAMDatePickerHelper.currentDateFormat.locale
-        let LongFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[0].convenienceDescription, options: 0, locale:locale)!
-        dateFormatControl.setTitle(LongFormat, forSegmentAtIndex: 0)
+        let LongFormat: String =  DateFormatter.dateFormat(fromTemplate: dateFormatArray[0].convenienceDescription, options: 0, locale:locale)!
+        dateFormatControl.setTitle(LongFormat, forSegmentAt: 0)
         
-        let mediumFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[1].convenienceDescription, options: 0, locale:locale)!
-        dateFormatControl.setTitle(mediumFormat, forSegmentAtIndex: 1)
+        let mediumFormat: String =  DateFormatter.dateFormat(fromTemplate: dateFormatArray[1].convenienceDescription, options: 0, locale:locale)!
+        dateFormatControl.setTitle(mediumFormat, forSegmentAt: 1)
         
-        let shortFormat: String =  NSDateFormatter.dateFormatFromTemplate(dateFormatArray[2].convenienceDescription, options: 0, locale:locale)!
-        dateFormatControl.setTitle(shortFormat, forSegmentAtIndex: 2)
+        let shortFormat: String =  DateFormatter.dateFormat(fromTemplate: dateFormatArray[2].convenienceDescription, options: 0, locale:locale)!
+        dateFormatControl.setTitle(shortFormat, forSegmentAt: 2)
     }
     
     func updateLabel() {
@@ -79,10 +79,15 @@ class ViewController: UIViewController, UpdateViewProtocol {
         dateLabel.text = yAMDatePickerHelper.stringRepresentationOfPicker()
         
         // Print the NSDate represented by the picker as String.
-        let dateFormat = NSDateFormatter();
+        let dateFormat = DateFormatter();
         dateFormat.dateFormat = yAMDatePickerHelper.currentDateFormat.description;
-        if let date = yAMDatePickerHelper.dateRepresentationOfPicker() {
-            print(dateFormat.stringFromDate(date))
-        }
+        /*
+        // There is currently a bug in DateFormater that prenvent to parse a String date with an Era:
+        // In Swift 2 "2018/01/01/AD" was perfectly valid while it fails in Swift 4:
+        */
+
+        //        if let date = yAMDatePickerHelper.dateRepresentationOfPicker() {
+        //            print(dateFormat.string(from: date))
+        //        }
     }
 }
